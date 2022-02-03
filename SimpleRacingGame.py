@@ -38,9 +38,9 @@ def main():
                 if event.key == pygame.K_q:
                     running = False
         if keys[pygame.K_UP]:
-            speed=speed+1
+            speed=speed+0.03
         else:
-            speed=speed-1
+            speed=speed-0.03
             if speed < 0:
                 speed = 0
         print(round(speed))
