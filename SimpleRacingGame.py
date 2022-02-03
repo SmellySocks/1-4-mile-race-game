@@ -1,4 +1,5 @@
 import math
+from operator import ge
 import pygame
 import os
 
@@ -8,14 +9,15 @@ METER = 16
 FPS = 60
 WHEEL_RAD = 0.32535
 AERO_DRAG = 0.3
-FINAL_DRIVE = 4.18
-GEAR_RATIO = [0, 3.538, 1.92, 2.322, 0.975, 0.76, 0.645]
+FINAL_DRIVE = 4.47
+GEAR_RATIO = [0, 3.417, 1.783, 1.121, 0.795, 0.647, 0.534]
+TORQUE = [150, 160, 185, 260, 330, 370, 360, 355, 350, 340, 325, 300, 275, 260, 255, 200]
 WEIGHT = 1600
 
 
 pygame.init()
 pygame.font.init()
-myfont = pygame.font.SysFont('Trebuchet MS', 30)
+myfont = pygame.font.SysFont('Lucida Console', 30)
 
 
 clock = pygame.time.Clock()
@@ -45,13 +47,17 @@ def main():
     throttle = 0
     aero_drag = 0
     rolling_resistance = 0
+    eng_RPM = 750
+    wheel_RPM = 0
+
     
     while running:
         keys = pygame.key.get_pressed()
-        speed_surface = myfont.render(str(round(speed*3.6)) + " km/h", False, (0, 0, 0))
-        dist_surface = myfont.render(str(round(distance)) + " m", False, (0, 0, 0))      #deklaracja powierzchni dystansu
-        timer_surface = myfont.render(str(round(time,2)) + " s", False, (0, 0, 0))
-        gear_surface = myfont.render("bieg: " + str(gear), False, (0, 0, 0))
+        speed_surface = myfont.render(str(round(speed*3.6)) + " km/h", True, (0, 0, 0))
+        dist_surface = myfont.render(str(round(distance)) + " m", True, (0, 0, 0))      #deklaracja powierzchni dystansu
+        timer_surface = myfont.render(str(round(time,2)) + " s", True, (0, 0, 0))
+        gear_surface = myfont.render("bieg: " + str(gear), True, (0, 0, 0))
+        RPM_surface = myfont.render("RPM: " + str(round(eng_RPM)), True, (0, 0, 0))
 
         WIN.blit(background, bgrect)
         WIN.blit(background, bgrect.move(bgrect.width, 0))
@@ -62,6 +68,7 @@ def main():
         WIN.blit(dist_surface,(0,30))
         WIN.blit(timer_surface,(0,60))
         WIN.blit(gear_surface,(590,0))
+        WIN.blit(RPM_surface,(560,30))
         
         
         
@@ -78,12 +85,8 @@ def main():
             race_finished = False
 
         if round(speed,1) == 27.7:
-            hundred = True
             hundred_time = time
-        
-        if hundred:
             print("0-100: " + str(round(hundred_time,2)) + " s")
-            hundred = False
 
 
         if bgrect.right <= 0 and bgrect.left <= WIDTH:
@@ -101,19 +104,29 @@ def main():
         else:
             throttle=0
         
+        torque = TORQUE[round(eng_RPM/250)-2]
+
         force = throttle*torque*GEAR_RATIO[gear]*FINAL_DRIVE/WHEEL_RAD
-        
+
         rolling_resistance = WEIGHT*9.81*0.01/math.sqrt(WHEEL_RAD*WHEEL_RAD+0.01*0.01)
         aero_drag = 0.5*1.2*speed*speed*AERO_DRAG*2.61
 
         acceletarion = (force-rolling_resistance-aero_drag)/WEIGHT
         speed=speed+acceletarion/FPS
 
+        wheel_RPM = speed/((WHEEL_RAD*2*math.pi)/60)
+        eng_RPM = wheel_RPM*GEAR_RATIO[gear]*FINAL_DRIVE
+
         if speed > 53.3:
                 speed = 53.3
         if speed < 0:
                 speed = 0
-        
+        if eng_RPM <= 750:
+            print("Silnik gaśnie")
+            eng_RPM = 750
+        if eng_RPM > 4250:
+            print("Odcina!")
+            eng_RPM = 4250
         
         if keys[pygame.K_e] and gear < len(GEAR_RATIO)-1 and block == False:
             block = True
