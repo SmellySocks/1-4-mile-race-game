@@ -1,3 +1,4 @@
+import math
 import pygame
 import os
 
@@ -9,11 +10,12 @@ WHEEL_RAD = 0.32535
 AERO_DRAG = 0.3
 FINAL_DRIVE = 4.18
 GEAR_RATIO = [0, 3.538, 1.92, 2.322, 0.975, 0.76, 0.645]
+WEIGHT = 1600
 
 
 pygame.init()
 pygame.font.init()
-myfont = pygame.font.SysFont('Lucida Console', 30)
+myfont = pygame.font.SysFont('Trebuchet MS', 30)
 
 
 clock = pygame.time.Clock()
@@ -37,6 +39,12 @@ def main():
     running = True
     block = False
     gear = 0
+    torque = 100
+    force = 0
+    acceletarion = 0
+    throttle = 0
+    aero_drag = 0
+    rolling_resistance = 0
     
     while running:
         keys = pygame.key.get_pressed()
@@ -53,7 +61,7 @@ def main():
         WIN.blit(speed_surface,(0,0))                       #render napisów
         WIN.blit(dist_surface,(0,30))
         WIN.blit(timer_surface,(0,60))
-        WIN.blit(gear_surface,(480,0))
+        WIN.blit(gear_surface,(590,0))
         
         
         
@@ -86,16 +94,26 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     running = False
-
+        
         if keys[pygame.K_UP]:
             start = True
-            speed=speed+2.24/FPS
-            if speed > 53.3:
-                speed=53.3
+            throttle=1
         else:
-            speed=speed-2.24/FPS
-            if speed < 0:
+            throttle=0
+        
+        force = throttle*torque*GEAR_RATIO[gear]*FINAL_DRIVE/WHEEL_RAD
+        
+        rolling_resistance = WEIGHT*9.81*0.01/math.sqrt(WHEEL_RAD*WHEEL_RAD+0.01*0.01)
+        aero_drag = 0.5*1.2*speed*speed*AERO_DRAG*2.61
+
+        acceletarion = (force-rolling_resistance-aero_drag)/WEIGHT
+        speed=speed+acceletarion/FPS
+
+        if speed > 53.3:
+                speed = 53.3
+        if speed < 0:
                 speed = 0
+        
         
         if keys[pygame.K_e] and gear < len(GEAR_RATIO)-1 and block == False:
             block = True
