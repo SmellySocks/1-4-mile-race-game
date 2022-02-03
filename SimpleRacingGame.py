@@ -11,7 +11,7 @@ WHEEL_RAD = 0.32535
 AERO_DRAG = 0.3
 FINAL_DRIVE = 4.47
 GEAR_RATIO = [0, 3.417, 1.783, 1.121, 0.795, 0.647, 0.534]
-TORQUE = [150, 160, 185, 260, 330, 370, 360, 355, 350, 340, 325, 300, 275, 260, 255]
+TORQUE = [150, 160, 185, 260, 330, 370, 360, 355, 350, 340, 325, 300, 275, 260, 255, 0]
 WEIGHT = 1600
 
 
@@ -41,7 +41,7 @@ def main():
     running = True
     block = False
     gear = 0
-    torque = 100
+    torque = 0
     force = 0
     acceletarion = 0
     throttle = 0
@@ -121,7 +121,7 @@ def main():
                 speed = 53.3
         if speed < 0:
                 speed = 0
-        if eng_RPM <= 750:
+        if eng_RPM < 750:
             print("Silnik gaśnie")
             eng_RPM = 750
         if eng_RPM > 4250:
