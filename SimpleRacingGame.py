@@ -53,7 +53,7 @@ def main():
         WIN.blit(speed_surface,(0,0))                       #render napisów
         WIN.blit(dist_surface,(0,30))
         WIN.blit(timer_surface,(0,60))
-        WIN.blit(gear_surface,(440,0))
+        WIN.blit(gear_surface,(480,0))
         
         
         
