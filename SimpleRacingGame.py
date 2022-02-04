@@ -21,9 +21,13 @@ myfont = pygame.font.SysFont('Lucida Console', 30)
 
 
 clock = pygame.time.Clock()
-background = pygame.image.load(os.path.join('Assets','background.png'))
+background1 = pygame.image.load(os.path.join('Assets','background1.png'))
+background2 = pygame.image.load(os.path.join('Assets','background2.png'))
+background3 = pygame.image.load(os.path.join('Assets','sky.png')) 
 vehicle = pygame.image.load(os.path.join('Assets','vehicle.png'))
-bgrect = background.get_rect()
+bgrect1 = background1.get_rect()
+bgrect2 = background2.get_rect()
+bgrect3 = background3.get_rect()
 vehiclerect = vehicle.get_rect()
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("1/4 mile race")
@@ -58,11 +62,16 @@ def main():
         timer_surface = myfont.render(str(round(time,2)) + " s", True, (0, 0, 0))
         gear_surface = myfont.render("bieg: " + str(gear), True, (0, 0, 0))
         RPM_surface = myfont.render("RPM: " + str(round(eng_RPM)), True, (0, 0, 0))
+        movement = METER*speed/FPS*(-1)
 
-        WIN.blit(background, bgrect)
-        WIN.blit(background, bgrect.move(bgrect.width, 0))
+        WIN.blit(background3, bgrect3)
+        WIN.blit(background2, bgrect2)
+        WIN.blit(background2, bgrect2.move(bgrect2.width, 0))
+        WIN.blit(background1, bgrect1)
+        WIN.blit(background1, bgrect1.move(bgrect1.width, 0))
         WIN.blit(vehicle,(40, HEIGHT-140))                  #render autka i tła
-        bgrect.move_ip(METER*speed/FPS*(-1), 0)             #przesuwanie tła
+        bgrect1.move_ip(movement, 0)             #przesuwanie tła
+        bgrect2.move_ip(movement/4, 0) 
 
         WIN.blit(speed_surface,(0,0))                       #render napisów
         WIN.blit(dist_surface,(0,30))
@@ -70,8 +79,11 @@ def main():
         WIN.blit(gear_surface,(590,0))
         WIN.blit(RPM_surface,(560,30))
         
-        
-        
+        if bgrect1.right <= 0 and bgrect1.left <= WIDTH:
+            bgrect1.x = 0
+        if bgrect2.right <= 0 and bgrect2.left <= WIDTH:
+            bgrect2.x = 0
+
         distance = distance+speed/FPS
         if start == True:
             time = time+1/FPS
@@ -89,8 +101,7 @@ def main():
             print("0-100: " + str(round(hundred_time,2)) + " s")
 
 
-        if bgrect.right <= 0 and bgrect.left <= WIDTH:
-            bgrect.x = 0
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
