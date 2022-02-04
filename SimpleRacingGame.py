@@ -128,10 +128,7 @@ def main():
         wheel_RPM = speed/((WHEEL_RAD*2*math.pi)/60)
         eng_RPM = wheel_RPM*GEAR_RATIO[gear]*FINAL_DRIVE
 
-        if speed > 53.3:
-                speed = 53.3
-        if speed < 0:
-                speed = 0
+        
         if eng_RPM < 750:
             print("Silnik gaśnie")
             eng_RPM = 750
