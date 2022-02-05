@@ -1,5 +1,4 @@
 import math
-from operator import ge
 import pygame
 import os
 
@@ -62,6 +61,7 @@ def main():
         timer_surface = myfont.render(str(round(time,2)) + " s", True, (0, 0, 0))
         gear_surface = myfont.render("bieg: " + str(gear), True, (0, 0, 0))
         RPM_surface = myfont.render("RPM: " + str(round(eng_RPM)), True, (0, 0, 0))
+        
         movement = METER*speed/FPS*(-1)
 
         WIN.blit(background3, bgrect3)
